@@ -1,134 +1,142 @@
-import { ActionIcon, Button, Space, Table, Text } from '@mantine/core';
-import { format } from 'date-fns';
-import React from 'react';
-import { FiEdit } from 'react-icons/fi';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import {
+	TABLE_DATA_LIMITS,
+	TABLE_DEFAULT_LIMIT,
+} from '@/app/config/configuration';
+import { IBooking } from '@/app/models/Bookings/bookings.model';
+import { IPaginationMeta } from '@/app/models/CommonPagination.model';
+import EmptyPannel from '@/components/common/EmptyPannel';
+import CircularLoader from '@/components/common/Loader';
+import PageTitleArea from '@/components/common/PageTitleArea';
+import Pagination from '@/components/common/Pagination';
+import { gql, useQuery } from '@apollo/client';
+import { Select, Space, Table } from '@mantine/core';
+import Router, { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { TbCalendarTime } from 'react-icons/tb';
+import BookingTableBody from './BookingTableBody';
 
 const BookingTable: React.FC<{}> = () => {
+	const [page, setPage] = useState<number>(1);
+	const [limit, setLimit] = useState<number>(5);
+	const router = useRouter();
+
+	// get booking packages
+	const {
+		data: bookings,
+		loading: fetching,
+		refetch,
+	} = useQuery<{
+		bookings: { nodes: IBooking[]; meta: IPaginationMeta };
+	}>(PACAKGE_BOOKINGS_QUERY, {
+		variables: {
+			page: parseInt(router.query.page as string) || page,
+			limit: parseInt(router.query.limit + '') || limit,
+		},
+	});
+
+	// change booking limits
+	const handleLimitChange = (limit: string) => {
+		Router.replace({
+			query: { ...Router.query, limit, page: 1 },
+		});
+		setLimit(parseInt(limit));
+	};
+
 	return (
-		<div className='bg-[#212231] shadow-lg rounded-md'>
-			<Table>
-				<thead>
-					<tr>
-						<th className='!py-3'>Name</th>
-						<th className='!py-3'>Mail</th>
-						<th className='!py-3'>Call</th>
-						<th className='!py-3'>Date</th>
-						<th className='!py-3'>Time</th>
-						<th className='!py-3'>Food Item</th>
-						<th className='!py-3'>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					{elements.map((element) => (
-						<tr key={element.name}>
-							<td className='text-dimmed'>{element.name}</td>
-							<td className='text-dimmed'>{element.email}</td>
-							<td className='text-dimmed'>{element.phone}</td>
-							<td className='text-dimmed'>
-								{format(element.date, 'd MMMM yyyy')}
-							</td>
-							<td className='text-dimmed'>{format(element.date, 'p')}</td>
-							<td className='text-dimmed'>{element.foodItem}</td>
-							<td className='flex gap-2 items-center'>
-								<ActionIcon>
-									<FiEdit size={20} />
-								</ActionIcon>
-								<Button variant='light' color='teal' size='xs'>
-									Details
-								</Button>
-							</td>
+		<>
+			<PageTitleArea
+				title='Package Bookings'
+				tagline='Booked travel packages'
+				actionComponent={
+					<div className='flex items-center gap-2'>
+						<Select
+							w={120}
+							placeholder='Pick one'
+							onChange={(value) => handleLimitChange(value!)}
+							data={TABLE_DATA_LIMITS}
+							defaultValue={
+								// (router.query.limit as string) ||
+
+								TABLE_DEFAULT_LIMIT
+							}
+						/>
+						<Select
+							w={120}
+							placeholder='Pick one'
+							searchable
+							nothingFound='No options'
+							data={['All Customers', 'Null']}
+						/>
+						<TbCalendarTime size={20} />
+						<span className='text-dimmed'>{'12 Feb, 23'}</span>
+					</div>
+				}
+			/>
+
+			<div className='bg-[#212231] shadow-lg rounded-md'>
+				<Table>
+					<thead>
+						<tr>
+							<th className='!py-3'>Name</th>
+							<th className='!py-3'>Mail</th>
+							<th className='!py-3'>Call</th>
+							<th className='!py-3'>Date</th>
+							<th className='!py-3'>Status</th>
+							<th className='!py-3'>Track</th>
+							<th className='!py-3'>Action</th>
 						</tr>
-					))}
-				</tbody>
-			</Table>
-			<div className='flex gap-3 items-center w-[200px] mx-auto my-4'>
-				<Text size='sm'>Page: 1/25</Text>
-				<Button variant='subtle' size='xs' color='red'>
-					<HiChevronLeft size={20} />
-				</Button>
-				<Button variant='subtle' size='xs' color='red'>
-					<HiChevronRight size={20} />
-				</Button>
+					</thead>
+					<tbody>
+						{bookings?.bookings?.nodes?.map(
+							(booking: IBooking, idx: number) => (
+								<BookingTableBody
+									key={idx}
+									booking={booking}
+									refetchBooking={refetch}
+								/>
+							)
+						)}
+					</tbody>
+				</Table>
+				<EmptyPannel isShow={!bookings?.bookings?.nodes?.length && !fetching} />
+				<CircularLoader isShow={fetching} />
+				<Pagination
+					isShow={
+						(bookings?.bookings?.nodes?.length! as number) &&
+						(!fetching as boolean)
+					}
+					limit={limit}
+					onPageChange={setPage}
+					page={page}
+					meta={bookings?.bookings?.meta!}
+				/>
+
+				<Space h={10} />
 			</div>
-			<Space h={10} />
-		</div>
+		</>
 	);
 };
 
 export default BookingTable;
 
-const elements = [
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-	{
-		name: 'Carbon',
-		email: 'carbon@gmail.com',
-		phone: '01611859756',
-		date: new Date(),
-		time: new Date(),
-		foodItem: 'Package-1',
-	},
-];
+// bookings query
+const PACAKGE_BOOKINGS_QUERY = gql`
+	query PACAKGE_BOOKINGS_QUERY($page: Int, $limit: Int) {
+		bookings(input: { page: $page, limit: $limit, sort: DESC, sortBy: "_id" }) {
+			nodes {
+				_id
+				name
+				email
+				phone
+				packageId
+				status
+			}
+			meta {
+				totalCount
+				currentPage
+				hasNextPage
+				totalPages
+			}
+		}
+	}
+`;

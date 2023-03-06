@@ -1,0 +1,54 @@
+query{
+  travelPackages(input: {page:1, limit: 10}){
+    nodes{
+      _id
+      packageTitle
+      regularPrice
+      salePrice
+      saleStatus
+      isPublished
+      packageStatus
+      packageStatus
+      bookingStart
+      bookingEnd
+      thumbnail
+      description
+      shortDescription
+      destination
+      # carouselThumbnails
+      travelOutline{
+        departureFrom
+        destinationTo
+        startAt
+        endAt
+        packageIn
+        description
+        breakfast
+        lunch
+        normalSnacks
+        dinner
+        otherFeatures
+      }
+      ratingsAndReviews{
+        rating
+        email
+        message
+      }
+      
+      travelers{
+        travelerEmail
+      }
+      
+      transportation{
+        tourBy
+        departureFrom
+        destination
+        startAt
+        transportName
+        stops
+        journeyBreak
+        endAt
+      }
+    }
+  }
+}

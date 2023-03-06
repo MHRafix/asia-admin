@@ -1,6 +1,7 @@
 import PageTitleArea from '@/components/common/PageTitleArea';
 import BookingTable from '@/components/dashboard-components/Booking/BookingTable';
 import AdminLayout from '@/components/layouts/AdminLayout';
+import { Select } from '@mantine/core';
 import { format } from 'date-fns';
 import { NextPage } from 'next';
 import { TbCalendarTime } from 'react-icons/tb';
@@ -10,17 +11,6 @@ const BookingPage: NextPage = () => {
 
 	return (
 		<AdminLayout>
-			<PageTitleArea
-				title='Bookings'
-				tagline='Overall 1780 Customer connect with resox'
-				actionComponent={
-					<div className='flex items-center gap-2'>
-						<TbCalendarTime size={20} />
-						<span className='text-dimmed'>{result}</span>
-					</div>
-				}
-			/>
-
 			<BookingTable />
 		</AdminLayout>
 	);

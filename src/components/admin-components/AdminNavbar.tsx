@@ -17,7 +17,7 @@ const AdminNavbar: React.FC<Props> = ({
 	setMobileMenuOpen,
 }) => {
 	return (
-		<div className='dark:bg-[#1D1E2B] flex items-center justify-between w-full gap-4 px-4  rounded-sm shadow-md h-14'>
+		<div className='bg-[#212231] flex items-center justify-between w-full gap-4 px-4  rounded-sm h-14 drop-shadow-2xl'>
 			<div className='flex items-center justify-between w-full'>
 				<MediaQuery largerThan='sm' styles={{ display: 'none' }}>
 					<Burger

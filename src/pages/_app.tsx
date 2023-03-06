@@ -1,12 +1,14 @@
 import '@/styles/globals.css';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
+import { NotificationsProvider } from '@mantine/notifications';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const client = new ApolloClient({
-		uri: 'https://api.reservetable.io/',
+		uri: 'http://localhost:8800/graphql',
 		cache: new InMemoryCache(),
 	});
 	return (
@@ -27,7 +29,11 @@ export default function App({ Component, pageProps }: AppProps) {
 						colorScheme: 'dark',
 					}}
 				>
-					<Component {...pageProps} />
+					<ModalsProvider>
+						<NotificationsProvider position='top-right'>
+							<Component {...pageProps} />
+						</NotificationsProvider>
+					</ModalsProvider>
 				</MantineProvider>
 			</ApolloProvider>
 		</>
