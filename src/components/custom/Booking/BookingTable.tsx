@@ -1,13 +1,16 @@
+import { TABLE_DATA_LIMITS, TABLE_DEFAULT_LIMIT } from '@/app/config/configuration';
 import { PACAKGE_BOOKINGS_QUERY } from '@/app/config/gql-query';
 import { IBooking } from '@/app/models/bookings.model';
 import { IPaginationMeta } from '@/app/models/CommonPagination.model';
 import EmptyPannel from '@/components/common/EmptyPannel';
 import CircularLoader from '@/components/common/Loader';
+import PageTitleArea from '@/components/common/PageTitleArea';
 import Pagination from '@/components/common/Pagination';
 import { useQuery } from '@apollo/client';
-import { Space, Table } from '@mantine/core';
+import { Select, Space, Table } from '@mantine/core';
 import Router, { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { TbCalendarTime } from 'react-icons/tb';
 import BookingTableBody from './BookingTableBody';
 
 const BookingTable: React.FC<{}> = () => {
@@ -39,6 +42,35 @@ const BookingTable: React.FC<{}> = () => {
 
 	return (
 		<>
+			<PageTitleArea
+				title='Package Bookings'
+				tagline='Booked travel packages'
+				actionComponent={
+					<div className='flex items-center gap-2'>
+						<Select
+							w={120}
+							placeholder='Pick one'
+							onChange={(value) => handleLimitChange(value!)}
+							data={TABLE_DATA_LIMITS}
+							defaultValue={
+								// (router.query.limit as string) ||
+
+								TABLE_DEFAULT_LIMIT
+							}
+						/>
+						<Select
+							w={120}
+							placeholder='Pick one'
+							searchable
+							nothingFound='No options'
+							data={['All Customers', 'Null']}
+						/>
+						<TbCalendarTime size={20} />
+						<span className='text-dimmed'>{'12 Feb, 23'}</span>
+					</div>
+				}
+			/>
+
 			<div className='bg-[#212231] shadow-lg rounded-md'>
 				<Table>
 					<thead>
