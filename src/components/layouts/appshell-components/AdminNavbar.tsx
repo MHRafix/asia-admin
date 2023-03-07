@@ -1,6 +1,5 @@
 import { Burger, MediaQuery } from '@mantine/core';
 import React from 'react';
-import IconLogo from '../icons/adminNavbarIcons/IconLogo';
 import HeaderUserMenu from './HeaderUserMenu';
 
 interface Props {
@@ -29,7 +28,7 @@ const AdminNavbar: React.FC<Props> = ({
 					/>
 				</MediaQuery>
 				<div className='flex items-center justify-between w-full'>
-					<IconLogo />
+					{/* <Image src={Logo} alt='Logo' width={100} height={100} /> */}
 					<div>{Actions}</div>
 				</div>
 			</div>

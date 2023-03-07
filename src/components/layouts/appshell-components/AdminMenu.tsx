@@ -1,43 +1,42 @@
 import { Navbar, NavLink } from '@mantine/core';
-
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import IconApps from '../icons/IconApps';
-import IconBooking from '../icons/IconBooking';
-import IconDashboard from '../icons/IconDashboard';
-import IconReports from '../icons/IconReports';
-import IconSettings from '../icons/IconSettings';
+import { BsBookmarkCheck } from 'react-icons/bs';
+import { FaRegChartBar } from 'react-icons/fa';
+import { HiOutlineViewGrid } from 'react-icons/hi';
+import { RiApps2Line } from 'react-icons/ri';
+import { TbSettings, TbUsers } from 'react-icons/tb';
 
 const data = [
 	{
 		label: 'Dashboard',
-		icon: IconDashboard,
+		icon: <HiOutlineViewGrid size={20} />,
 		href: '/',
 	},
 	{
-		label: 'Booking',
-		icon: IconBooking,
-		href: '/booking',
+		label: 'Bookings',
+		icon: <BsBookmarkCheck size={20} />,
+		href: '/bookings',
 	},
 	{
 		label: 'Customers',
-		icon: IconBooking,
+		icon: <TbUsers size={20} />,
 		href: '/customers',
 	},
 	{
 		label: 'Reports',
-		icon: IconReports,
+		icon: <FaRegChartBar size={20} />,
 		href: '/reports',
 	},
 	{
 		label: 'Apps',
-		icon: IconApps,
+		icon: <RiApps2Line size={20} />,
 		href: '/apps',
 	},
 	{
 		label: 'Settings',
-		icon: IconSettings,
+		icon: <TbSettings size={20} />,
 		href: '/settings',
 	},
 ];
@@ -79,23 +78,14 @@ const AdminMenu: React.FC<Props> = ({ opened, style, width, height }) => {
 							styles={{
 								label: {
 									// background: "#1D1E2C",
-									color:
-										getNavIdentifier(asPath, Boolean(query.id)) === item.href
-											? 'red'
-											: 'white',
+									color: 'white',
 								},
 								// root:{background: "#1D1E2C"}
 							}}
 							active={getNavIdentifier(asPath, Boolean(query.id)) === item.href}
 							key={item.label}
 							label={item.label}
-							icon={
-								<item.icon
-									isActive={
-										getNavIdentifier(asPath, Boolean(query.id)) === item.href
-									}
-								/>
-							}
+							icon={item?.icon}
 							component={Link}
 							href={item.href}
 						/>

@@ -1,7 +1,7 @@
 import { AppShell } from '@mantine/core';
 import { PropsWithChildren, useState } from 'react';
-import AdminMenu from '../admin-components/AdminMenu';
-import AdminNavbar from '../admin-components/AdminNavbar';
+import AdminMenu from './appshell-components/AdminMenu';
+import AdminNavbar from './appshell-components/AdminNavbar';
 
 interface Props {
 	title?: string;

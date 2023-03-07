@@ -1,6 +1,7 @@
-import { IBooking } from '@/app/models/Bookings/bookings.model';
+import { DELETE_BOOKING_MUTATION } from '@/app/config/gql-query';
+import { IBooking } from '@/app/models/bookings.model';
 import { deleteConfirmModal } from '@/components/common/deleteConfirmModal';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { Badge, Button } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import React from 'react';
@@ -67,9 +68,3 @@ const BookingTableBody: React.FC<IBookingTableBodyProps> = ({
 };
 
 export default BookingTableBody;
-
-const DELETE_BOOKING_MUTATION = gql`
-	mutation DELETE_BOOKING_MUTATION($bookingId: String!) {
-		removeBooking(input: { key: "_id", operator: eq, value: $bookingId })
-	}
-`;

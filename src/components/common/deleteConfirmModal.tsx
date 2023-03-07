@@ -9,8 +9,8 @@ export const deleteConfirmModal = (
 		title: 'Please confirm your action',
 		children: (
 			<Text size='sm'>
-				Are you really want to delete this booking? Please click one of these
-				buttons to proceed.
+				Are you really want to delete this? Please click one of these buttons to
+				proceed.
 			</Text>
 		),
 		labels: { confirm: 'Confirm Delete', cancel: 'Cancel' },
@@ -19,7 +19,7 @@ export const deleteConfirmModal = (
 		onConfirm: () => {
 			deleteFunc({
 				variables: {
-					bookingId: id,
+					id,
 				},
 			});
 		},
