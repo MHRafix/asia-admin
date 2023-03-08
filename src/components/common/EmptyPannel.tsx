@@ -2,7 +2,10 @@ import { Button, Text } from '@mantine/core';
 import React from 'react';
 import { BsBookmarkCheck, BsBookmarkPlus } from 'react-icons/bs';
 
-const EmptyPannel: React.FC<{ isShow: boolean }> = ({ isShow }) => {
+const EmptyPannel: React.FC<{ isShow: boolean; title: string }> = ({
+	isShow,
+	title,
+}) => {
 	if (!isShow) {
 		return null;
 	}
@@ -12,7 +15,7 @@ const EmptyPannel: React.FC<{ isShow: boolean }> = ({ isShow }) => {
 				<BsBookmarkCheck size={40} color='red' />
 			</div>
 			<Text color='red' fw={500}>
-				There is no bookings found!
+				{title}
 			</Text>
 			<Button
 				leftIcon={<BsBookmarkPlus size={20} />}

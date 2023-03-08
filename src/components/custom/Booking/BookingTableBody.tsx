@@ -1,8 +1,9 @@
 import { DELETE_BOOKING_MUTATION } from '@/app/config/gql-query';
 import { IBooking } from '@/app/models/bookings.model';
 import { deleteConfirmModal } from '@/components/common/deleteConfirmModal';
+import { handleSetUid } from '@/logic/handleSetUid';
 import { useMutation } from '@apollo/client';
-import { Badge, Button } from '@mantine/core';
+import { Badge, Button, Checkbox, Flex } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import React from 'react';
 import { FiEdit, FiTrash } from 'react-icons/fi';
@@ -10,10 +11,12 @@ import { FiEdit, FiTrash } from 'react-icons/fi';
 interface IBookingTableBodyProps {
 	booking: IBooking;
 	refetchBooking: () => void;
+	onStoreId: any;
 }
 const BookingTableBody: React.FC<IBookingTableBodyProps> = ({
 	booking,
 	refetchBooking,
+	onStoreId,
 }) => {
 	// delete booking
 	const [deleteBooking, { loading: deletingBooking }] = useMutation(
@@ -32,7 +35,15 @@ const BookingTableBody: React.FC<IBookingTableBodyProps> = ({
 	);
 	return (
 		<tr>
-			<td className='text-dimmed'>{booking.name}</td>
+			<td className='text-dimmed !py-2'>
+				<Flex gap={8} align='center'>
+					<Checkbox
+						color='red'
+						onClick={() => handleSetUid(onStoreId, booking?._id!)}
+					/>
+					{booking.name}
+				</Flex>
+			</td>
 			<td className='text-dimmed'>{booking.email}</td>
 			<td className='text-dimmed'>{booking.phone}</td>
 			<td className='text-dimmed'>{new Date().toDateString()}</td>

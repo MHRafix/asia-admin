@@ -1,23 +1,31 @@
 import {
+	CUSTOMERS_TABLE_DATA_SORTBY,
+	CUSTOMERS_TABLE_DEFAULT_SORTBY,
 	TABLE_DATA_LIMITS,
 	TABLE_DEFAULT_LIMIT,
 } from '@/app/config/configuration';
-import { USERS_QUERY } from '@/app/config/gql-query';
+import { BULK_REMOVE_USER, USERS_QUERY } from '@/app/config/gql-query';
 import { IPaginationMeta } from '@/app/models/CommonPagination.model';
 import { IUser } from '@/app/models/users.model';
 import EmptyPannel from '@/components/common/EmptyPannel';
 import CircularLoader from '@/components/common/Loader';
 import PageTitleArea from '@/components/common/PageTitleArea';
 import Pagination from '@/components/common/Pagination';
-import { useQuery } from '@apollo/client';
-import { Select, Space, Table } from '@mantine/core';
+import TableHead from '@/components/common/TableHead';
+import { CUSTOMER_TABLE_HEAD } from '@/components/common/TABLE_HEAD';
+import { Query_Variable } from '@/logic/queryVariables';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Select, Space, Table } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import Router, { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { FiTrash } from 'react-icons/fi';
 import CustomersTableBody from './CustomersTableBody';
 
 const CustomerTable: React.FC<{}> = () => {
 	const [page, setPage] = useState<number>(1);
 	const [limit, setLimit] = useState<number>(5);
+	const [customerIds, setCustomerIds] = useState<string[]>([]);
 	const router = useRouter();
 
 	// get booking packages
@@ -27,14 +35,16 @@ const CustomerTable: React.FC<{}> = () => {
 		refetch,
 	} = useQuery<{
 		users: { nodes: IUser[]; meta: IPaginationMeta };
-	}>(USERS_QUERY, {
-		variables: {
-			page: parseInt(router.query.page as string) || page,
-			limit: parseInt(router.query.limit + '') || limit,
-		},
-	});
+	}>(
+		USERS_QUERY,
+		Query_Variable(
+			router.query.page as string,
+			router.query.limit as string,
+			page,
+			limit
+		)
+	);
 
-	console.log(customers);
 	// change booking limits
 	const handleLimitChange = (limit: string) => {
 		Router.replace({
@@ -43,6 +53,30 @@ const CustomerTable: React.FC<{}> = () => {
 		setLimit(parseInt(limit));
 	};
 
+	const handleSortChange = (sortBy: string) => {
+		// Router.replace({
+		// 	query: { ...Router.query, limit, page: 1 },
+		// });
+		// setLimit(parseInt(limit));
+		console.log(sortBy);
+	};
+
+	// remove bulk bookings
+	const [bulkDeleteCustomer, { loading: bulkDeleting }] = useMutation(
+		BULK_REMOVE_USER,
+		{
+			onCompleted: () => {
+				refetch();
+				showNotification({
+					title: 'Customers bulk delete successfull!',
+					color: 'red',
+					icon: <FiTrash size={20} />,
+					message: '',
+				});
+			},
+		}
+	);
+
 	return (
 		<>
 			<PageTitleArea
@@ -50,23 +84,29 @@ const CustomerTable: React.FC<{}> = () => {
 				tagline='Our solid customers'
 				actionComponent={
 					<div className='flex items-center gap-2'>
+						<Button
+							loading={bulkDeleting}
+							disabled={!customerIds?.length}
+							color='red'
+							leftIcon={<FiTrash size={16} />}
+							onClick={() => bulkDeleteCustomer()}
+						>
+							Bulk Remove
+						</Button>
 						<Select
 							w={120}
 							placeholder='Pick one'
 							onChange={(value) => handleLimitChange(value!)}
 							data={TABLE_DATA_LIMITS}
-							defaultValue={
-								// (router.query.limit as string) ||
-
-								TABLE_DEFAULT_LIMIT
-							}
+							defaultValue={TABLE_DEFAULT_LIMIT}
 						/>
 						<Select
 							w={120}
 							placeholder='Pick one'
-							searchable
+							onChange={(value) => handleSortChange(value!)}
 							nothingFound='No options'
-							data={['All Customers', 'Null']}
+							data={CUSTOMERS_TABLE_DATA_SORTBY}
+							defaultValue={CUSTOMERS_TABLE_DEFAULT_SORTBY}
 						/>
 					</div>
 				}
@@ -76,11 +116,9 @@ const CustomerTable: React.FC<{}> = () => {
 				<Table>
 					<thead>
 						<tr>
-							<th className='!py-3'>Name</th>
-							<th className='!py-3'>Mail</th>
-							<th className='!py-3'>Role</th>
-							<th className='!py-3'>Avatar</th>
-							<th className='!py-3'>Action</th>
+							{CUSTOMER_TABLE_HEAD.map((head: string, idx: number) => (
+								<TableHead key={idx} headData={head} />
+							))}
 						</tr>
 					</thead>
 					<tbody>
@@ -89,12 +127,16 @@ const CustomerTable: React.FC<{}> = () => {
 								key={idx}
 								customer={customer}
 								refetchUser={refetch}
+								onStoreId={setCustomerIds}
 							/>
 						))}
 					</tbody>
 				</Table>
 
-				<EmptyPannel isShow={!customers?.users?.nodes?.length && !fetching} />
+				<EmptyPannel
+					isShow={!customers?.users?.nodes?.length && !fetching}
+					title='There is no customers found!'
+				/>
 				<CircularLoader isShow={fetching} />
 				<Pagination
 					isShow={
@@ -113,55 +155,3 @@ const CustomerTable: React.FC<{}> = () => {
 };
 
 export default CustomerTable;
-
-const elements = [
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-	{
-		name: 'Mehedi H. Rafiz',
-		location: 'Manddari Bazar, Lakshmipur',
-		email: 'rafiz.mehedi@gmail.com',
-		phone: '01611859756',
-		lastActivity: '5min ago',
-	},
-];

@@ -1,6 +1,7 @@
 import { REMOVE_USER } from '@/app/config/gql-query';
 import { IUser } from '@/app/models/users.model';
 import { deleteConfirmModal } from '@/components/common/deleteConfirmModal';
+import { handleSetUid } from '@/logic/handleSetUid';
 import { useMutation } from '@apollo/client';
 import { Badge, Button, Checkbox, Flex } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
@@ -11,10 +12,12 @@ import { FiEdit, FiTrash } from 'react-icons/fi';
 interface ICustomerTableProps {
 	customer: IUser;
 	refetchUser: () => void;
+	onStoreId: any;
 }
 const CustomersTableBody: React.FC<ICustomerTableProps> = ({
 	customer,
 	refetchUser,
+	onStoreId,
 }) => {
 	// delete booking
 	const [deleteCustomer, { loading: deletingCustomer }] = useMutation(
@@ -35,7 +38,11 @@ const CustomersTableBody: React.FC<ICustomerTableProps> = ({
 		<tr>
 			<td className='text-dimmed !py-2'>
 				<Flex gap={8} align='center'>
-					<Checkbox color='red' /> {customer.name}
+					<Checkbox
+						color='red'
+						onClick={() => handleSetUid(onStoreId, customer?._id!)}
+					/>{' '}
+					{customer.name}
 				</Flex>
 			</td>
 			<td className='text-dimmed !py-2'>{customer.email}</td>
